@@ -40,7 +40,7 @@ jspm_packages
 .DS_Store
 
 # data
-*.json
+server/*.json
 
 # jquery
 jquery-
