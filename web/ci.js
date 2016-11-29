@@ -39,11 +39,35 @@ function stripInitial(pinyin) {
 function rythme(pinyin) {
     var py = stripInitial(pinyin);
     var match = py.match(/[0-9]$/);
-    if (!match) return [py, 0];
+    if (!match) return [py, 0, pinyin];
     return [py.slice(0, -1), (function () {
         if (match[0] <= 2) return 1;
         else return 0;
-    })()];
+    })(), pinyin];
+}
+
+/**
+ * a javascript version of sprintf for myself
+ * use %s, no support for \%s
+ * @param str
+ * @param arr
+ */
+function sprintf(str, arr) {
+    var tmp = str.split("%s");
+    if(tmp.length != arr.length + 1) throw "internal error: not enough insertion";
+    var i = 1, res = tmp[0];
+    for(i; i < tmp.length; i++){
+        res += (arr[i-1] + tmp[i])
+    }
+    return res
+}
+
+function toRythme(num) {
+    return ["平","仄","可平可仄","平韵","仄韵","逗号","句号","顿号"][num];
+}
+
+function toTone(num) {
+    return ["轻", "平", "仄"][num]
 }
 
 /**
@@ -55,30 +79,54 @@ function rythme(pinyin) {
 /**
  * comparing if a sentence matches the regular
  * each parameter are imported without ，。、
- * @param rythme
- * @param pinyin
+ * @param origin 原句
+ * @param rythmes
+ * @param pinyins
  * @param root 韵脚
  */
-function compareSentence(rythme, pinyin, root) {
+function compareSentence(origin, rythmes, pinyins, root) {
     var r = 0;
+    var common = function (or, py, condition, err) {
+        // 0 平
+        var tone = 0;
+        for(r = 0; r < py.length; r++){
+            tone = py[r][2];
+            if(condition(tone)) return {result: true}
+        }
+        return {
+            result: false,
+            error: err
+        }
+    };
     var regular = [
-        function (py) {
-            // 0 平
-
+        function (or, py) {
+            return common(or, py, function (tone) {
+                return tone === 0 || tone == 1;
+            }, sprintf("根据本程序之词典库，文字%s不符合音调，此处应为%s。\n生成的拼音韵脚为%s(%s)。\n程序判断仅供参考。", [or, toRythme(0), py, (function () {
+                var res = [], i = 0;
+                for(i; i < py.length; i++){
+                    res.push(toRythme(rythme(py[i])[1]))
+                }
+                return res
+            }())]))
         }
     ];
-    var test = function (py, ry) {
-        /**
-         * py: 单个字的拼音 数组的数组，由rythme生成
-         * ry: 格律 数字
-         */
+    /**
+     *
+     * @param or 单字，原文
+     * @param py 单个字的拼音 数组的数组，由rythme生成
+     * @param ry 格律 数字
+     */
+    var test = function (or, py, ry) {
         var pass = regular[ry](py, root);
 
-    }
+    };
+
+    return regular[0]("斜", ["ie2", "ie2"])
 }
 
 // local tests
-/** passed
+/** test rythme() passed
  var py = ["ha1", "ng", "na4", "o2"];
  py.forEach(function (e) {
     console.log(e, rythme(e))
@@ -97,6 +145,12 @@ var ry_totest = "2120014";
 
 var root_totest = "ui";
 
-console.log(compareSentence(ry_totest, py_totest, root_totest));
+var origin_totest = "斜月半窗还少睡"; //《蝶恋花》晏几道
 
-// 斜月半窗还少睡 《蝶恋花》晏几道
+console.log(compareSentence(origin_totest, ry_totest, py_totest, root_totest));
+
+/** test sprintf() passed
+console.log(sprintf("haha%shjgjfg%sdflkdhf", [1,2]));
+*/
+
+
