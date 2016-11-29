@@ -43,7 +43,10 @@ jspm_packages
 server/*.json
 
 # jquery
-jquery-
+jquery-*
 
 # bootstrap
 bootstrap
+
+# webstorm
+.idea

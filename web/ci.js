@@ -26,9 +26,9 @@ function checkPinyin(pinyin) {
  */
 function stripInitial(pinyin) {
     // for 嗯 哼
-    if(/^nm?g?[0-9]?$/.test(pinyin)) return pinyin;
+    if (/^nm?g?[0-9]?$/.test(pinyin)) return pinyin;
     // others
-    return pinyin.replace(/^[b-df-hj-np-tw-z]]*/,"")
+    return pinyin.replace(/^[b-df-hj-np-tw-z]]*/, "")
 }
 
 /**
@@ -39,16 +39,64 @@ function stripInitial(pinyin) {
 function rythme(pinyin) {
     var py = stripInitial(pinyin);
     var match = py.match(/[0-9]$/);
-    if(!match) return 0;
-    if(match[0] <= 2) return 1;
-    else return 2;
+    if (!match) return [py, 0];
+    return [py.slice(0, -1), (function () {
+        if (match[0] <= 2) return 1;
+        else return 0;
+    })()];
 }
 
+/**
+ * format expect for a sentence
+ * rythme: "0123456", standing for ["平","仄","可平可仄","平韵","仄韵","逗号","句号","顿号"]
+ * pinyin: [["pin1"], ["duo1", "yin1", "zi4"], ...]
+ */
+
+/**
+ * comparing if a sentence matches the regular
+ * each parameter are imported without ，。、
+ * @param rythme
+ * @param pinyin
+ * @param root 韵脚
+ */
+function compareSentence(rythme, pinyin, root) {
+    var r = 0;
+    var regular = [
+        function (py) {
+            // 0 平
+
+        }
+    ];
+    var test = function (py, ry) {
+        /**
+         * py: 单个字的拼音 数组的数组，由rythme生成
+         * ry: 格律 数字
+         */
+        var pass = regular[ry](py, root);
+
+    }
+}
 
 // local tests
 /** passed
-var py = ["ha1", "ng", "na4", "o2"];
-py.forEach(function (e) {
+ var py = ["ha1", "ng", "na4", "o2"];
+ py.forEach(function (e) {
     console.log(e, rythme(e))
 });
-*/
+ */
+
+var py_totest = [['xie2', 'xia2'],
+    ['yue4'],
+    ['ban4'],
+    ['chuang1'],
+    ['huan2', 'hai2'],
+    ['shao3', 'shao4'],
+    ['shui4']];
+
+var ry_totest = "2120014";
+
+var root_totest = "ui";
+
+console.log(compareSentence(ry_totest, py_totest, root_totest));
+
+// 斜月半窗还少睡 《蝶恋花》晏几道
