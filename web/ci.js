@@ -28,7 +28,7 @@ function stripInitial(pinyin) {
     // for 嗯 哼
     if (/^nm?g?[0-9]?$/.test(pinyin)) return pinyin;
     // others
-    return pinyin.replace(/^[b-df-hj-np-tw-z]]*/, "")
+    return pinyin.replace(/^[b-df-hj-np-tw-z]*/, "")
 }
 
 /**
@@ -88,14 +88,18 @@ function compareSentence(origin, rythmes, pinyins, root) {
     var r = 0;
     var common = function (or, py, condition, err) {
         var tone = 0, root = 0;
+        var truth = {
+            true_tone : false,
+            true_root : false
+        };
         for (r = 0; r < py.length; r++) {
             tone = rythme(py[r])[1];
             root = rythme(py[r])[0];
-            if (condition(tone, root)) return {result: true}
+            if (condition(tone, root, truth)) return {result: true}
         }
         return {
             result: false,
-            error: err
+            error: err(truth)
         }
     };
     var err_tone = function (tone, or, py) {
@@ -124,13 +128,17 @@ function compareSentence(origin, rythmes, pinyins, root) {
             // 0 平
             return common(or, py, function (tone) {
                 return tone === 0 || tone == 1;
-            }, err_tone(0, or, py))
+            }, function() {
+                return err_tone(1, or, py)
+            })
         },
         function (or, py) {
             // 1 仄
             return common(or, py, function (tone) {
                 return tone === 0 || tone == 2
-            }, err_tone(1, or, py))
+            }, function() {
+                return err_tone(1, or, py)
+            })
         },
         function (or, py) {
             // 2 可平可仄
@@ -138,31 +146,32 @@ function compareSentence(origin, rythmes, pinyins, root) {
         },
         function (or, py, root) {
             // 3 平韵
-            var true_tone, true_root;
-            return common(or, py, function (tone, r) {
-                    true_tone = tone === 0 || tone == 1;
-                    true_root = r == root;
-                },
-                (function () {
+
+            return common(or, py, function (tone, r, truth) {
+                truth.true_tone = tone === 0 || tone == 1;
+                truth.true_root = r == root;
+                return truth.true_root && truth.true_tone
+            },
+                function (truth) {
                     var res = "";
-                    if(!true_tone) res += err_tone(0, or, py);
-                    if(!true_root) res += err_root(root, or, py);
+                    if(!truth.true_tone) res += err_tone(0, or, py);
+                    if(!truth.true_root) res += err_root(root, or, py);
                     return res
-                })())
+                })
         },
         function (or, py, root) {
             // 4 仄韵
-            var true_tone, true_root;
-            return common(or, py, function (tone, r) {
-                    true_tone = tone === 0 || tone == 2;
-                    true_root = r == root;
+            return common(or, py, function (tone, r, truth) {
+                    truth.true_tone = tone === 0 || tone == 2;
+                    truth.true_root = r == root;
+                    return truth.true_root && truth.true_tone
                 },
-                (function () {
+                function (truth) {
                     var res = "";
-                    if(!true_tone) res += err_tone(1, or, py);
-                    if(!true_root) res += err_root(root, or, py);
+                    if(!truth.true_tone) res += err_tone(1, or, py);
+                    if(!truth.true_root) res += err_root(root, or, py);
                     return res
-                })())
+                })
         }
         /*
          return {
@@ -183,11 +192,28 @@ function compareSentence(origin, rythmes, pinyins, root) {
      * @param ry 格律 数字
      */
     var test = function (or, py, ry) {
-        var pass = regular[ry](py, root);
-
+        return regular[ry](or, py, root);
     };
 
-    return regular[4]("还", ["hai2", "huan2"], "ie");
+    var res = [], i = 0;
+    for(i; i < rythmes.length; i++){
+        res[i] = test(origin[i], pinyins[i], rythmes[i])
+    }
+
+    return res;
+}
+
+function analyse(res) {
+    var i = 0;
+    var correct = true;
+    for(i; i < res.length; i++){
+        if(!res[i].result) {
+            console.log(res[i].error);
+            correct = false
+        }
+    }
+    if(correct)
+        console.log("根据本程序之词典库，这个句子是符合格律的，\n程序判断仅供参考。")
 }
 
 // local tests
@@ -213,8 +239,23 @@ var root_totest = "ui";
 var origin_totest = "斜月半窗还少睡"; //《蝶恋花》晏几道
 
 var res = compareSentence(origin_totest, ry_totest, py_totest, root_totest);
-//console.log(res);
-if(!res.result) console.log(res.error)
+console.log("输入：", origin_totest);
+analyse(res);
+
+var py2 = [ [ 'men2' ],
+    [ 'bo2', 'po1' ],
+    [ 'dong1' ],
+    [ 'wu2' ],
+    [ 'wan4', 'mo4' ],
+    [ 'li3' ],
+    [ 'chuan2' ] ];
+
+var origin2 = "门泊东吴万里船";
+console.log("输入：", origin2);
+var res2 = compareSentence(origin2, ry_totest, py2, root_totest);
+analyse(res2);
+
+//if(!res.result) console.log(res.error)
 
 /** test sprintf() passed
  console.log(sprintf("haha%shjgjfg%sdflkdhf", [1,2]));
