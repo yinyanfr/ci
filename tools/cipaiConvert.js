@@ -16,27 +16,26 @@ var convert = function (str) {
     var i = 0, value = -1, res = "";
     for(i; i < str.length; i++){
         value = table.indexOf(str[i]);
-        if(value === -1) throw "Unknown Symbol";
+        if(value === -1) throw "Input error : Unknown Symbol " + str[i];
         res += value;
     }
-    return res;
+    return parseInt(res);
 };
 
 var single = function (str) {
-    // take spaces out
+    // take spaces and \n out
     str = str.replace(/" "+/g, "");
-    // split to parts
-    var arr = str.split("\n");
-    var i = 0;
-    for(i; i < arr.length; i++){
-        arr[i] = convert(arr[i])
+    str = str.replace(/"\n"/g, "");
+    var i = 0, arr = [];
+    for(i; i < str.length; i++){
+        arr.push(convert(str[i]))
     }
-    return arr;
+    return arr
 };
 
 // local test
-/** passed
+/** passed */
 var args = argv.run().targets;
-console.log(single(args[0]));
+console.log(JSON.stringify(single(args[0])));
 
-*/
+

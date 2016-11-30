@@ -8,6 +8,8 @@
 ## 进度
 <img src="http://pro.yinyan.fr/d/test.png" />
 
+完整测试结果 web/test.text 
+
 ## Credit
 拼音库（现代汉语普通话）： https://github.com/hotoo/pinyin
 

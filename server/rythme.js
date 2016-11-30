@@ -18,16 +18,16 @@ var argv = require("argv");
 // Calculation
 var main = function (phrase) {
     var value = ls.getItem(phrase);
-    console.log(value);
+    //console.log(value);
     if(value) return value;
     value = pinyin(phrase, {
         heteronym: true,
         segment: true,
         style: pinyin.STYLE_TONE2
     });
-    value = JSON.stringify(value);
-    ls.setItem(phrase, value);
-    console.log(phrase);
+    var value1 = JSON.stringify(value);
+    ls.setItem(phrase, value1);
+    //console.log(phrase);
     return value;
 };
 
@@ -40,5 +40,11 @@ var app = express();
 /* passed
 var args = argv.run().targets;
 console.log(main(args[0]));
+
 */
 
+var test = ["间关莺语花底滑", "幽咽泉流冰下难",
+    "冰泉冷涩弦凝绝", "凝绝不通声暂歇",
+    "别有幽愁暗恨生", "此时无声胜有声"];
+var a = test.map(main);
+console.log(a)
