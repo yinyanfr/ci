@@ -9,7 +9,8 @@
 
 var argv = require("argv");
 
-var table = ["○", "●", "⊙", "△", "▲", "，", "。", "、"];
+var table = ["○", "●", "◎", "⊙", "△", "▲", "，", "。", "、", "『", "』", "〖", "〗"];
+//            0平  1仄  2偏平 3偏仄 4平韵 5仄韵 6    7     8     9对偶10     11叠韵12
 
 var convert = function (str) {
     var i = 0, value = -1, res = "";
@@ -37,4 +38,5 @@ var single = function (str) {
 /** passed
 var args = argv.run().targets;
 console.log(single(args[0]));
+
 */

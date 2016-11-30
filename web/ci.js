@@ -65,7 +65,7 @@ function sprintf(str, arr) {
 }
 
 function toRythme(num) {
-    return ["平", "仄", "可平可仄", "平韵", "仄韵", "逗号", "句号", "顿号"][num];
+    return ["平", "仄", "本平可仄", "本仄可平", "平韵", "仄韵", "逗号", "句号", "顿号", "『", "』", "〖", "〗"][num];
 }
 
 function toTone(num) {
@@ -73,7 +73,7 @@ function toTone(num) {
 }
 /**
  * format expect for a sentence
- * rythme: "0123456", standing for ["平","仄","可平可仄","平韵","仄韵","逗号","句号","顿号"]
+ * rythme: "0123456...", standing for ["平","仄","可平可仄","平韵","仄韵","逗号","句号","顿号" ... ]
  * pinyin: [["pin1"], ["duo1", "yin1", "zi4"], ...]
  */
 
@@ -142,11 +142,15 @@ function compareSentence(origin, rythmes, pinyins, root) {
             })
         },
         function (or, py) {
-            // 2 可平可仄
+            // 2， 3 可平可仄
+            return {result: true}
+        },
+        function (or, py) {
+            // 2， 3 可平可仄
             return {result: true}
         },
         function (or, py, root) {
-            // 3 平韵
+            // 4 平韵
 
             return common(or, py, function (tone, r, truth) {
                 truth.true_tone = tone === 0 || tone == 1;
@@ -161,7 +165,7 @@ function compareSentence(origin, rythmes, pinyins, root) {
                 })
         },
         function (or, py, root) {
-            // 4 仄韵
+            // 5 仄韵
             return common(or, py, function (tone, r, truth) {
                     truth.true_tone = tone === 0 || tone == 2;
                     truth.true_root = r == root;
@@ -234,7 +238,7 @@ var py_totest = [['xie2', 'xia2'],
     ['shao3', 'shao4'],
     ['shui4']];
 
-var ry_totest = "2120014";
+var ry_totest = "3130015";
 
 var root_totest = "ui";
 
@@ -259,6 +263,7 @@ analyse(res2);
 
 //if(!res.result) console.log(res.error)
 */
+
 /** test sprintf() passed
  console.log(sprintf("haha%shjgjfg%sdflkdhf", [1,2]));
  */
