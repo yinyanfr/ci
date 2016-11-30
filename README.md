@@ -1,6 +1,6 @@
 # ci
 ```
-[Featuring Chinese Classic Literature, so documents on Chinese only]
+[Designed for Chinese Classic Literature, so documents in Chinese only]
 ```
 
 一个填词工具，尝试模仿类似于ios上已有的软件
