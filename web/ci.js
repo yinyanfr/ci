@@ -25,6 +25,7 @@ function checkPinyin(pinyin) {
  * @param pinyin: str
  */
 function stripInitial(pinyin) {
+    if(!checkPinyin(pinyin)) throw "error: pinyin in wrong format";
     // for 嗯 哼
     if (/^nm?g?[0-9]?$/.test(pinyin)) return pinyin;
     // others
@@ -103,7 +104,7 @@ function compareSentence(origin, rythmes, pinyins, root) {
         }
     };
     var err_tone = function (tone, or, py) {
-        return sprintf("根据本程序之词典库，文字\"%s\"不符合音调，此处应为%s。\n生成的拼音为%s(%s)。\n程序判断仅供参考。", [or, toRythme(tone), py, (function () {
+        return sprintf("根据本程序之词典库，文字\"%s\"不符合音调，此处应为%s。\n生成的拼音为%s(%s)。\n程序判断仅供参考。\n", [or, toRythme(tone), py, (function () {
             var res = [], i = 0;
             for (i; i < py.length; i++) {
                 res.push(toTone(rythme(py[i])[1]))
@@ -112,7 +113,7 @@ function compareSentence(origin, rythmes, pinyins, root) {
         }())])
     };
     var err_root = function (root, or, py) {
-        return sprintf("根据本程序之词典库，文字\"%s\"不符合韵脚，此处应押%s韵。\n生成的拼音为%s(%s)。\n程序判断仅供参考。", [or, root, py, (function () {
+        return sprintf("根据本程序之词典库，文字\"%s\"不符合韵脚，此处应押%s韵。\n生成的拼音为%s(%s)。\n程序判断仅供参考。\n", [or, root, py, (function () {
             var res = [], i = 0;
             for (i; i < py.length; i++) {
                 res.push(rythme(py[i])[0])
@@ -224,6 +225,7 @@ function analyse(res) {
 });
  */
 
+/** test compareSentence() passed
 var py_totest = [['xie2', 'xia2'],
     ['yue4'],
     ['ban4'],
@@ -256,7 +258,7 @@ var res2 = compareSentence(origin2, ry_totest, py2, root_totest);
 analyse(res2);
 
 //if(!res.result) console.log(res.error)
-
+*/
 /** test sprintf() passed
  console.log(sprintf("haha%shjgjfg%sdflkdhf", [1,2]));
  */
