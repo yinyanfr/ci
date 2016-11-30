@@ -11,4 +11,4 @@
 ## Credit
 拼音库（现代汉语普通话）： https://github.com/hotoo/pinyin
 
-格律库：http://wenku.baidu.com/view/63430ca00029bd64783e2c96.html
+格律库：http://wenku.baidu.com/view/4475c953777f5acfa1c7aa00b52acfc789eb9fd0

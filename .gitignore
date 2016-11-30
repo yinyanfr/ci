@@ -50,3 +50,6 @@ bootstrap
 
 # webstorm
 .idea
+
+# tmp
+tmp.*
